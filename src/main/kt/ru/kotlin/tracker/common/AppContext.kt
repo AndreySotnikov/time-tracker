@@ -1,5 +1,6 @@
 package ru.kotlin.tracker.common
 
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
 @Suppress("UNCHECKED_CAST")
@@ -10,23 +11,19 @@ class AppContext private constructor() {
     }
 
     private val defaultQualifier = "default"
-    private val bindings: MutableMap<KClass<Any>, MutableMap<String, Any>> = mutableMapOf()
+    private val bindings: MutableMap<KClass<Any>, MutableMap<String, Any>> = ConcurrentHashMap()
 
-    fun <T : Any> register(clazz: KClass<T>, qualifier: String, inst: T): T {
-        bindings.computeIfAbsent(clazz as KClass<Any>, { _ -> mutableMapOf() }).put(qualifier, inst)
+    fun <T : Any> register(clazz: KClass<T>,
+                           inst: T,
+                           qualifier: String = defaultQualifier): T {
+        bindings.computeIfAbsent(clazz as KClass<Any>, { _ -> ConcurrentHashMap() })
+                .put(qualifier, inst)
         return inst
     }
 
-    fun <T : Any> register(clazz: KClass<T>, inst: T): T {
-        bindings.computeIfAbsent(clazz as KClass<Any>, { _ -> mutableMapOf() }).put(defaultQualifier, inst)
-        return inst
-    }
-
-    fun <T : Any> get(clazz: KClass<T>, qualifier: String): T {
+    fun <T : Any> get(clazz: KClass<T>,
+                      qualifier: String = defaultQualifier): T {
         return bindings[clazz as KClass<Any>]?.get(qualifier) as T
     }
 
-    fun <T : Any> get(clazz: KClass<T>): T {
-        return bindings[clazz as KClass<Any>]?.get(defaultQualifier) as T
-    }
 }

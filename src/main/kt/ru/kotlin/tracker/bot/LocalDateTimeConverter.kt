@@ -3,8 +3,8 @@ package ru.kotlin.tracker.bot
 import org.mongodb.morphia.converters.SimpleValueConverter
 import org.mongodb.morphia.converters.TypeConverter
 import org.mongodb.morphia.mapping.MappedField
+import ru.kotlin.tracker.Constants
 import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.util.*
 
 
@@ -16,7 +16,7 @@ class LocalDateTimeConverter : TypeConverter(LocalDateTime::class.java), SimpleV
         }
 
         if (fromDBObject is Date) {
-            return fromDBObject.toInstant().atZone(ZoneOffset.systemDefault()).toLocalDateTime()
+            return fromDBObject.toInstant().atZone(Constants.ZONE_ID).toLocalDateTime()
         }
 
         if (fromDBObject is LocalDateTime) {
@@ -38,14 +38,10 @@ class LocalDateTimeConverter : TypeConverter(LocalDateTime::class.java), SimpleV
         }
 
         if (value is LocalDateTime) {
-            val zoned = value.atZone(ZoneOffset.systemDefault())
+            val zoned = value.atZone(Constants.ZONE_ID)
             return Date.from(zoned.toInstant())
         }
 
-        // TODO: encode other types
-
         throw IllegalArgumentException(String.format("Cannot encode object of class: %s", value.javaClass.name))
     }
-}// TODO: Add other date/time supported classes here
-// Other java.time classes: LocalDate.class, LocalTime.class
-// Arrays: LocalDateTime[].class, etc
+}

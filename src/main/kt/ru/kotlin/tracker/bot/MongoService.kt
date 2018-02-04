@@ -11,7 +11,6 @@ import ru.kotlin.tracker.bot.dto.DailyStatsDto
 import ru.kotlin.tracker.bot.model.Break
 import ru.kotlin.tracker.bot.model.Workday
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 class MongoService : DatabaseService {
@@ -58,7 +57,7 @@ class MongoService : DatabaseService {
 
         val updateOperations = datastore.createUpdateOperations(Workday::class.java)
                 .set("userId", userId)
-                .setOnInsert("creationDate", LocalDateTime.now(ZoneId.of("Europe/Moscow")))
+                .setOnInsert("creationDate", LocalDateTime.now(Constants.ZONE_ID))
                 .set("arrivalTime", time)
 
         datastore.update(query, updateOperations, true)
@@ -76,7 +75,7 @@ class MongoService : DatabaseService {
 
         val updateOperations = datastore.createUpdateOperations(Workday::class.java)
                 .set("userId", userId)
-                .setOnInsert("creationDate", LocalDateTime.now(ZoneId.of("Europe/Moscow")))
+                .setOnInsert("creationDate", LocalDateTime.now(Constants.ZONE_ID))
                 .set("leaveTime", time)
 
         datastore.update(query, updateOperations, true)

@@ -1,9 +1,9 @@
 package ru.kotlin.tracker.bot.dto
 
+import ru.kotlin.tracker.Constants
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class DailyStatsDto(private var date: LocalDateTime?,
@@ -28,10 +28,9 @@ class DailyStatsDto(private var date: LocalDateTime?,
     }
 
     private fun initDefaults() {
-        val zoneId = ZoneId.of("Europe/Moscow")
-        date = if (date == null) LocalDateTime.now(zoneId) else date
-        arrived = if (arrived == null) LocalDateTime.now(zoneId) else arrived
-        gone = if (gone == null) LocalDateTime.now(zoneId) else gone
+        date = if (date == null) LocalDateTime.now(Constants.ZONE_ID) else date
+        arrived = if (arrived == null) LocalDateTime.now(Constants.ZONE_ID) else arrived
+        gone = if (gone == null) LocalDateTime.now(Constants.ZONE_ID) else gone
         breaks.forEach { b ->
             if (b.start == null) {
                 b.start = b.end
