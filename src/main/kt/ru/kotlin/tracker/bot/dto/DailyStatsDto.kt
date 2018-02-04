@@ -36,7 +36,7 @@ class DailyStatsDto(private var date: LocalDateTime?,
                 b.start = b.end
             }
             if (b.end == null) {
-                b.end = b.start
+                b.end = gone
             }
         }
     }

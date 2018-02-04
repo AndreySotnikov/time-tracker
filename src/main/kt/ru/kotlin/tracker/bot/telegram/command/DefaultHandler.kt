@@ -6,7 +6,7 @@ import ru.kotlin.tracker.bot.api.DatabaseService
 
 class DefaultHandler(dbService: DatabaseService) : AbstractCommandHandler(dbService) {
     override fun test(text: String): Boolean {
-        return false
+        return true
     }
 
     override fun handle(message: Message): SendMessage {

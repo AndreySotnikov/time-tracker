@@ -28,8 +28,8 @@ class TimeManagementWebhookBot(service: DatabaseService) : TelegramWebhookBot() 
 
     override fun getBotPath(): String = Constants.BOT_NAME
 
-    override fun getBotUsername() = Constants.BOT_NAME
+    override fun getBotUsername(): String = Constants.BOT_NAME
 
-    override fun getBotToken() = Constants.BOT_TOKEN
+    override fun getBotToken(): String = Constants.BOT_TOKEN
 
 }

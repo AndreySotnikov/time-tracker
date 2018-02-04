@@ -23,8 +23,6 @@ class LocalDateTimeConverter : TypeConverter(LocalDateTime::class.java), SimpleV
             return fromDBObject
         }
 
-        // TODO: decode other types
-
         throw IllegalArgumentException(String.format("Cannot decode object of class: %s", fromDBObject.javaClass.name))
     }
 
