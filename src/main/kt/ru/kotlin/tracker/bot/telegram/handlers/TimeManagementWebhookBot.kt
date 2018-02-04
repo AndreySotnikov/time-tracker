@@ -23,7 +23,10 @@ class TimeManagementWebhookBot(service: DatabaseService) : TelegramWebhookBot() 
         } catch (e: Exception) {
             logger.error("Error while receiving message {}", update, e)
         }
-        return SendMessage().setReplyToMessageId(update?.updateId)
+        return SendMessage()
+                .setReplyToMessageId(update?.message?.messageId)
+                .setChatId(update?.message?.chatId)
+                .setText("Неверная команда")
     }
 
     override fun getBotPath(): String = Constants.BOT_NAME

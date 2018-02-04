@@ -1,6 +1,7 @@
 package ru.kotlin.tracker.bot.telegram.handlers
 
 import org.slf4j.LoggerFactory
+import org.telegram.telegrambots.api.methods.send.SendMessage
 import org.telegram.telegrambots.api.objects.Update
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import ru.kotlin.tracker.Constants
@@ -20,6 +21,10 @@ class TimeManagementLongPollingBot(service: DatabaseService) : TelegramLongPolli
             }
         } catch (e: Exception) {
             logger.error("Error while receiving message {}", update, e)
+            execute(SendMessage()
+                    .setReplyToMessageId(update?.message?.messageId)
+                    .setChatId(update?.message?.chatId)
+                    .setText("Неверная команда"))
         }
     }
 
