@@ -10,5 +10,6 @@ interface DatabaseService {
     fun leave(userId: Int?, time: LocalDateTime): LocalDateTime
     fun startBreak(userId: Int?, time: LocalDateTime): LocalDateTime?
     fun endBreak(userId: Int?, time: LocalDateTime): LocalDateTime?
-    fun stats(userId: Int?, time: LocalDateTime): DailyStatsDto?
+    fun dailyStats(userId: Int?, time: LocalDateTime): DailyStatsDto?
+    fun weeklyStats(userId: Int?, time: LocalDateTime): List<DailyStatsDto>
 }

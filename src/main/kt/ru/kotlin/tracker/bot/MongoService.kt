@@ -10,8 +10,11 @@ import ru.kotlin.tracker.bot.api.DatabaseService
 import ru.kotlin.tracker.bot.dto.DailyStatsDto
 import ru.kotlin.tracker.bot.model.Break
 import ru.kotlin.tracker.bot.model.Workday
+import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalAdjuster
+import java.time.temporal.TemporalAdjusters
 
 class MongoService : DatabaseService {
 
@@ -134,7 +137,7 @@ class MongoService : DatabaseService {
         return time
     }
 
-    override fun stats(userId: Int?, time: LocalDateTime): DailyStatsDto? {
+    override fun dailyStats(userId: Int?, time: LocalDateTime): DailyStatsDto? {
 
         val startTime = time.truncatedTo(ChronoUnit.DAYS).withHour(0)
         val endTime = time.plusDays(1).truncatedTo(ChronoUnit.DAYS).withHour(0)
@@ -148,10 +151,30 @@ class MongoService : DatabaseService {
             val (_, _, creationDate, arrivalTime, leaveTime, breaks) = workdays[0]
             val breakDtoList = breaks
                     .map({ (from, to) -> DailyStatsDto.BreakDto(from, to) })
-            return DailyStatsDto(creationDate, arrivalTime,
+            return DailyStatsDto(creationDate!!, arrivalTime,
                     leaveTime, breakDtoList)
         }
         return null
     }
+
+    override fun weeklyStats(userId: Int?, time: LocalDateTime): List<DailyStatsDto> {
+
+        val startTime = time.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).truncatedTo(ChronoUnit.DAYS).withHour(0)
+        val endTime = time.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).plusDays(1).truncatedTo(ChronoUnit.DAYS).withHour(0)
+
+        val workdays = datastore.createQuery(Workday::class.java)
+                .filter("creationDate >=", startTime)
+                .filter("creationDate <", endTime)
+                .filter("userId", userId).asList()
+
+        if (!workdays.isEmpty()) {
+            return workdays.map { it -> DailyStatsDto(it.creationDate!!, it.arrivalTime, it.leaveTime, mapBreaks(it.breaks)) }
+        }
+        return listOf()
+    }
+
+    private fun mapBreaks(breaks: List<Break>) :List<DailyStatsDto.BreakDto> =
+            breaks.map({ (from, to) -> DailyStatsDto.BreakDto(from, to) })
+
 
 }

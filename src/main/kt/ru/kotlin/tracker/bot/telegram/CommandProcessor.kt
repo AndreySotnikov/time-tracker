@@ -13,7 +13,8 @@ class CommandProcessor(dbService: DatabaseService) {
             StartBreakHandler(dbService),
             EndBreakHandler(dbService),
             GoneHandler(dbService),
-            StatsHandler(dbService),
+            DailyStatsHandler(dbService),
+            WeeklyStatsHandler(dbService),
             GoneHandler(dbService),
             DefaultHandler(dbService)
     )

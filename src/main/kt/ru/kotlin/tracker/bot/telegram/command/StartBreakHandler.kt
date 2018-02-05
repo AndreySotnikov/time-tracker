@@ -19,11 +19,8 @@ class StartBreakHandler(dbService: DatabaseService) : AbstractCommandHandler(dbS
         val sendMessage = SendMessage()
         sendMessage.setChatId(message.chatId!!)
         sendMessage.replyMarkup = getKeyboard()
-        if (arrived == null) {
-            sendMessage.text = "Нужно вернуться прежде, чем начать новый перерыв"
-        } else {
-            sendMessage.text = "Отошел в " + arrived
-        }
+        sendMessage.text = if (arrived == null) "Нужно вернуться прежде, чем начать новый перерыв" else
+            "Отошел в " + arrived
         return sendMessage
     }
 }

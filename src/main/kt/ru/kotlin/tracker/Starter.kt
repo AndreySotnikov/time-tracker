@@ -2,6 +2,8 @@ package ru.kotlin.tracker
 
 import ru.kotlin.tracker.bot.MongoService
 import ru.kotlin.tracker.bot.api.DatabaseService
+import ru.kotlin.tracker.bot.services.WorktimeCalculationService
+import ru.kotlin.tracker.bot.services.WorktimeCalculationServiceImpl
 import ru.kotlin.tracker.bot.telegram.TelegramInitializer
 import ru.kotlin.tracker.common.AppContext
 
@@ -13,4 +15,5 @@ fun main(args: Array<String>) {
 
 fun initContext() {
     AppContext.instance.register(DatabaseService::class, MongoService())
+    AppContext.instance.register(WorktimeCalculationService::class, WorktimeCalculationServiceImpl())
 }
