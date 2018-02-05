@@ -2,6 +2,7 @@ package ru.kotlin.tracker.bot.services
 
 import ru.kotlin.tracker.bot.dto.DailyStatsDto
 import java.time.Duration
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -28,25 +29,18 @@ class WorktimeCalculationServiceImpl : WorktimeCalculationService {
 
     override fun weeklyStatsToString(weeklyStats: List<DailyStatsDto>): String {
         var totalDuration = Duration.ZERO
+        val dateRangeStr = formatDateRange(weeklyStats.first().date, weeklyStats.last().date)
         val sb = StringBuilder()
-        sb.append('*')
-                .append(weeklyStats.first().date.format(SHORT_DATE_FORMATTER))
-                .append("-")
-                .append(weeklyStats.last().date.format(SHORT_DATE_FORMATTER))
-                .append("*\n")
         weeklyStats.forEach({
             val workTime = calculateWorkTime(it)
             totalDuration = totalDuration.plus(workTime)
-            val workDurStr = LocalTime.MIDNIGHT.plus(workTime).format(TIME_FORMATTER)
-            sb.append('_').append(it.date.format(SHORT_DATE_FORMATTER)).append(" :_ ").append(workDurStr).append("\n")
+            sb.append(formatTodayWorktime(it.date, workTime))
         })
-        sb.append("------------------\n")
-                .append("_Total :_ ")
-                .append(totalDuration.toMinutes() / 60)
-                .append(':')
-                .append(totalDuration.toMinutes() % 60)
-
-        return sb.toString()
+        val totalDurationStr = formatTotalDuration(totalDuration)
+        return String.format("*Период: %s*\n" +
+                "%s" +
+                "------------------\n" +
+                "_Всего :_ %s", dateRangeStr, sb.toString(), totalDurationStr)
     }
 
     override fun dailyStatsToString(dailyStats: DailyStatsDto): String {
@@ -59,11 +53,8 @@ class WorktimeCalculationServiceImpl : WorktimeCalculationService {
 
         if (!dailyStats.breaks.isEmpty()) {
             sb.append("_Перерывы:_\n")
-            dailyStats.breaks.map { b ->
-                val startStr = if (b.start == null) "..." else b.start!!.format(TIME_FORMATTER)
-                val endStr = if (b.end == null) "..." else b.end!!.format(TIME_FORMATTER)
-                startStr + " - " + endStr + "\n"
-            }
+            dailyStats.breaks
+                    .map { formatBreak(it)}
                     .forEach({ sb.append(it) })
         }
 
@@ -76,4 +67,25 @@ class WorktimeCalculationServiceImpl : WorktimeCalculationService {
                 "%s" +
                 "_Рабочее время:_ %s", dateStr, arrivedStr, goneStr, sb.toString(), workDurStr)
     }
+
+    private fun formatBreak(breakData: DailyStatsDto.BreakDto): String {
+        val startStr = if (breakData.start == null) "..." else breakData.start!!.format(TIME_FORMATTER)
+        val endStr = if (breakData.end == null) "..." else breakData.end!!.format(TIME_FORMATTER)
+        return String.format("%s - %s\n", startStr, endStr)
+    }
+
+    private fun formatDateRange(from: LocalDateTime, to: LocalDateTime): String {
+        return String.format("%s -- %s", from.format(SHORT_DATE_FORMATTER), to.format(SHORT_DATE_FORMATTER))
+    }
+
+    private fun formatTodayWorktime(date: LocalDateTime, duration: Duration): String {
+        val workDurStr = LocalTime.MIDNIGHT.plus(duration).format(TIME_FORMATTER)
+        val dateStr = date.format(SHORT_DATE_FORMATTER)
+        return String.format("_%s :_ %s\n", dateStr, workDurStr)
+    }
+
+    private fun formatTotalDuration(totalDuration: Duration): String {
+        return String.format("%d:%d", totalDuration.toMinutes() / 60, totalDuration.toMinutes() % 60)
+    }
+
 }
