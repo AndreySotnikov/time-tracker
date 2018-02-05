@@ -27,9 +27,11 @@ class TelegramInitializer {
     }
 
     private fun registerBot(botsApi: TelegramBotsApi) {
-        if (Constants.IS_PROD)
+        if (Constants.IS_PROD) {
             botsApi.registerBot(TimeManagementWebhookBot(dbService))
-        botsApi.registerBot(TimeManagementLongPollingBot(dbService))
+        } else {
+            botsApi.registerBot(TimeManagementLongPollingBot(dbService))
+        }
     }
 
     private fun createApi(): TelegramBotsApi {
